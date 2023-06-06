@@ -27,19 +27,18 @@ public class SpawnSetListener implements Listener {
         }
 
         if(event.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.valueOf(bottomMaterial)) && !doesSpawnExit(event)){
-            ConfigurationSection spawnLocationsConfig = config.getConfigurationSection("spawnLocations");
             String worldName = event.getPlayer().getWorld().getName();
+            ConfigurationSection spawnLocationsConfig = config.getConfigurationSection("spawnLocations");
+            ConfigurationSection worldSection = spawnLocationsConfig.getConfigurationSection(worldName);
+            Block block = event.getBlock();
 
             if(spawnLocationsConfig == null){
                  spawnLocationsConfig = config.createSection("spawnLocations");
             }
 
-            ConfigurationSection worldSection = spawnLocationsConfig.getConfigurationSection(worldName);
-
             if(worldSection == null){
                 worldSection = spawnLocationsConfig.createSection(event.getPlayer().getWorld().getName());
             }
-            Block block = event.getBlock();
 
             int spawnIndex = getNextSpawnIndex(worldSection);
             ConfigurationSection spawnLocation = worldSection.createSection("spawn" + spawnIndex);
