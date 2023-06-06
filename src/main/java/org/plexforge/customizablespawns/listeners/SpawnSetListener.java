@@ -1,12 +1,16 @@
 package org.plexforge.customizablespawns.listeners;
 
 
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -17,6 +21,8 @@ import java.util.Set;
 public class SpawnSetListener implements Listener {
     FileConfiguration config;
     CustomizableSpawns plugin;
+
+    String pluginPrefix = ChatColor.GOLD + "" + ChatColor.BOLD + "CustomizableSpawns: " + ChatColor.WHITE;
 
     public SpawnSetListener(FileConfiguration configFile, CustomizableSpawns pluginFile){
         this.config = configFile;
@@ -59,14 +65,14 @@ public class SpawnSetListener implements Listener {
 
 
             plugin.saveConfig();
-            event.getPlayer().sendMessage("Spawn point set!");
+            event.getPlayer().sendMessage(pluginPrefix + "Spawn point set!");
         }
         return true;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public boolean removeSpawnBlock(BlockBreakEvent event){
-        if(!event.getPlayer().hasPermission("customizable.spawn.setter")){
+        if(!event.getPlayer().hasPermission("customizable.spawn.setter") && event.getPlayer().getGameMode().equals(GameMode.CREATIVE)){
             event.setCancelled(true);
             return false;
         }
@@ -102,7 +108,7 @@ public class SpawnSetListener implements Listener {
                             existingSpawn.equals(event.getBlock().getRelative(BlockFace.UP).getLocation()) ||
                             existingSpawn.equals(event.getBlock().getRelative(BlockFace.DOWN).getLocation())){
                         spawnLocationsConfig.set(spawnKey, null);
-                        event.getPlayer().sendMessage("Spawn point removed!");
+                        event.getPlayer().sendMessage( pluginPrefix + "Spawn point deleted");
                         plugin.saveConfig();
                         return true;
                     }
@@ -130,7 +136,7 @@ public class SpawnSetListener implements Listener {
                 }
             }
         }
-        event.getPlayer().sendMessage("Spawn Point does not exist!");
+        event.getPlayer().sendMessage(pluginPrefix + "Spawn Point does not exist!");
         return false;
     }
 
