@@ -11,8 +11,9 @@ public final class CustomizableSpawns extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
         saveDefaultConfig();
-        Bukkit.getServer().getPluginManager().registerEvents(new PlayerJoinListener(getConfig()), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new SpawnSetListener(getConfig(), this), this);
+        SpawnSetListener.loadSpawnLocations();
     }
 }
 

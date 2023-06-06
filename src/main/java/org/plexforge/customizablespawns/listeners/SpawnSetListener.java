@@ -1,10 +1,7 @@
 package org.plexforge.customizablespawns.listeners;
 
 
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -14,17 +11,43 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.plexforge.customizablespawns.CustomizableSpawns;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class SpawnSetListener implements Listener {
-    FileConfiguration config;
-    CustomizableSpawns plugin;
+    private static FileConfiguration config;
+    private final CustomizableSpawns plugin;
+    private final String pluginPrefix = ChatColor.GOLD + "" + ChatColor.BOLD + "CustomizableSpawns: " + ChatColor.WHITE;
 
-    String pluginPrefix = ChatColor.GOLD + "" + ChatColor.BOLD + "CustomizableSpawns: " + ChatColor.WHITE;
+    public static List<Location> spawnLocationsSave = new ArrayList<>();
+
 
     public SpawnSetListener(FileConfiguration configFile, CustomizableSpawns pluginFile){
-        this.config = configFile;
+        config = configFile;
         this.plugin = pluginFile;
+    }
+
+    public static void loadSpawnLocations(){
+        ConfigurationSection spawnLocationsConfig = config.getConfigurationSection("spawnLocations");
+        if (spawnLocationsConfig != null) {
+            for (String worldName : spawnLocationsConfig.getKeys(false)) {
+                ConfigurationSection worldSection = spawnLocationsConfig.getConfigurationSection(worldName);
+                for (String spawnKey : worldSection.getKeys(false)) {
+                    ConfigurationSection spawnLocation = worldSection.getConfigurationSection(spawnKey);
+                    double x = spawnLocation.getDouble("x");
+                    double y = spawnLocation.getDouble("y");
+                    double z = spawnLocation.getDouble("z");
+                    Location location = new Location(Bukkit.getWorld(worldName), x, y, z);
+                    spawnLocationsSave.add(location);
+                }
+            }
+        }
+
+        for(Location location : spawnLocationsSave){
+            System.out.println(location.toString());
+        }
+
     }
 
     @EventHandler
@@ -63,6 +86,7 @@ public class SpawnSetListener implements Listener {
 
 
             plugin.saveConfig();
+            spawnLocationsSave.add(spawnBlock);
             event.getPlayer().sendMessage(pluginPrefix + "Spawn point set!");
         }
         return true;
@@ -106,6 +130,12 @@ public class SpawnSetListener implements Listener {
                             existingSpawn.equals(event.getBlock().getRelative(BlockFace.UP).getLocation()) ||
                             existingSpawn.equals(event.getBlock().getRelative(BlockFace.DOWN).getLocation())){
                         spawnLocationsConfig.set(spawnKey, null);
+
+                        for(Location location : spawnLocationsSave){
+                            if(existingSpawn.equals(location)){
+                                spawnLocationsSave.remove(location);
+                            }
+                        }
                         event.getPlayer().sendMessage( pluginPrefix + "Spawn point deleted");
                         plugin.saveConfig();
                         return true;
@@ -119,22 +149,25 @@ public class SpawnSetListener implements Listener {
     private boolean doesSpawnExit(BlockPlaceEvent event){
         String worldName = event.getPlayer().getWorld().getName();
         ConfigurationSection spawnLocationsConfig = config.getConfigurationSection("spawnLocations." + worldName);
+
         if(spawnLocationsConfig != null){
-            for(String spawnKey : spawnLocationsConfig.getKeys(false)){
-                ConfigurationSection spawnLocation = spawnLocationsConfig.getConfigurationSection(spawnKey);
+                for (String spawnKey : spawnLocationsConfig.getKeys(false)) {
+                    ConfigurationSection spawnLocation = spawnLocationsConfig.getConfigurationSection(spawnKey);
+                    if(spawnLocation != null){
+                        int x = spawnLocation.getInt("x");
+                        int y = spawnLocation.getInt("y");
+                        int z = spawnLocation.getInt("z");
 
-                int x = spawnLocation.getInt("x");
-                int y = spawnLocation.getInt("y");
-                int z = spawnLocation.getInt("z");
+                        Location existingSpawn = new Location(event.getBlock().getWorld(), x, y, z);
 
-                Location existingSpawn = new Location(event.getBlock().getWorld(), x, y, z);
-
-                if(existingSpawn.equals(event.getBlock().getRelative(BlockFace.DOWN).getLocation())){
-                    event.getPlayer().sendMessage("Spawn Point exists!");
-                    return true;
+                        if (existingSpawn.equals(event.getBlock().getRelative(BlockFace.DOWN).getLocation())) {
+                            event.getPlayer().sendMessage("Spawn Point exists!");
+                            return true;
+                        }
+                    }
                 }
-            }
         }
+
         event.getPlayer().sendMessage(pluginPrefix + "Spawn Point does not exist!");
         return false;
     }
