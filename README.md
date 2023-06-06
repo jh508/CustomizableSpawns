@@ -34,15 +34,20 @@ The Customizable Spawns plugin is a powerful tool for customizing and managing s
 
 ## Usage
 
-- To set a new spawn point, simply place the designated block (configured in the `config.yml`) at the desired location. The plugin will automatically detect the event and update the spawn location accordingly.
+- To set a new spawn point, simply place the designated blocks (configured in the `config.yml`) at the desired location. The plugin will automatically detect the event and update the spawn location accordingly. By default, this is a yellow wool block with a gold light weighted pressure plate placed on top.
 
 - Players will now spawn at these spawn points randomly (if configured correctly) OR players will spawn at the very first spawn point in the configuration file.
 
+- `Permissions` are simple, set the permission of those who should be able to use this plugin as `customizable.spawn.setter`
+
 ## Configuration
 
-The `config.yml` file allows you to define and manage the spawn locations for your server. The structure is as follows:
+The `config.yml` file allows you to define and manage the spawn locations for your server. There is also extra configuration implemented such as the `materials` to allow server owners to change the block types. These material types are CASE_SENSITIVE. The structure is as follows:
 
 ```yaml
+# Material types are CASE_SENSITIVE and must be formatted correctly; e.g WHITE_WOOL, GRASS_BLOCK. Correct enum types can be found https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
+bottomMaterial: YELLOW_WOOL
+topMaterial: LIGHT_WEIGHTED_PRESSURE_PLATE
 spawnLocations:
   world-name:
     spawn1:
@@ -52,6 +57,5 @@ spawnLocations:
     spawn2:
       x: -100
       y: 70
-      z: 200
-      
+      z: 200   
       
