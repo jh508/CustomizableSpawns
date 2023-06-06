@@ -70,7 +70,6 @@ public class SpawnSetListener implements Listener {
         return true;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
     public boolean removeSpawnBlock(BlockBreakEvent event){
         if(!event.getPlayer().hasPermission("customizable.spawn.setter") && event.getPlayer().getGameMode().equals(GameMode.CREATIVE)){
             event.setCancelled(true);
