@@ -5,12 +5,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -70,6 +68,7 @@ public class SpawnSetListener implements Listener {
         return true;
     }
 
+    @EventHandler
     public boolean removeSpawnBlock(BlockBreakEvent event){
         if(!event.getPlayer().hasPermission("customizable.spawn.setter") && event.getPlayer().getGameMode().equals(GameMode.CREATIVE)){
             event.setCancelled(true);
@@ -123,6 +122,7 @@ public class SpawnSetListener implements Listener {
         if(spawnLocationsConfig != null){
             for(String spawnKey : spawnLocationsConfig.getKeys(false)){
                 ConfigurationSection spawnLocation = spawnLocationsConfig.getConfigurationSection(spawnKey);
+
                 int x = spawnLocation.getInt("x");
                 int y = spawnLocation.getInt("y");
                 int z = spawnLocation.getInt("z");
