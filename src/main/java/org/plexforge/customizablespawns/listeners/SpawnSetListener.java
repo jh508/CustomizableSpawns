@@ -18,6 +18,10 @@ public class SpawnSetListener implements Listener {
 
     @EventHandler
     public boolean isSpawnSet(BlockPlaceEvent event){
+        if(!event.getPlayer().hasPermission("customizable.spawn.setter")){
+            return false;
+        }
+
         String topMaterial = CustomizableSpawns.getPlugin().getConfig().getString("topMaterial");
         String bottomMaterial = CustomizableSpawns.getPlugin().getConfig().getString("bottomMaterial");
 
