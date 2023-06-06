@@ -1,0 +1,4 @@
+# Material types are CASE_SENSITIVE and must be formatted correctly; e.g WHITE_WOOL, GRASS_BLOCK. Correct enum types can be found https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
+bottomMaterial: YELLOW_WOOL
+topMaterial: LIGHT_WEIGHTED_PRESSURE_PLATE
+spawnLocations:

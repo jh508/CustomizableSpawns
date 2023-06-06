@@ -1,0 +1,4 @@
+name: CustomizableSpawns
+version: '${project.version}'
+main: org.plexforge.customizablespawns.CustomizableSpawns
+api-version: 1.19
