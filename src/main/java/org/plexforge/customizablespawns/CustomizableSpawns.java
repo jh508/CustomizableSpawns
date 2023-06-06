@@ -8,25 +8,11 @@ import org.plexforge.customizablespawns.listeners.SpawnSetListener;
 
 public final class CustomizableSpawns extends JavaPlugin {
 
-    private static CustomizableSpawns plugin;
-
-    public static CustomizableSpawns getPlugin() {
-        return plugin;
-    }
-
     @Override
     public void onEnable() {
         // Plugin startup logic
         saveDefaultConfig();
-        plugin = this;
-
-        Bukkit.getServer().getPluginManager().registerEvents(new SpawnSetListener(), this);
-    }
-
-
-    @EventHandler
-    public void playerJoinEvent(PlayerJoinEvent e){
-        e.getPlayer().teleport(e.getPlayer().getWorld().getSpawnLocation());
+        Bukkit.getServer().getPluginManager().registerEvents(new SpawnSetListener(getConfig(), this), this);
     }
 }
 

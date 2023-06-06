@@ -14,7 +14,13 @@ import org.plexforge.customizablespawns.CustomizableSpawns;
 import java.util.Set;
 
 public class SpawnSetListener implements Listener {
-    FileConfiguration config = CustomizableSpawns.getPlugin().getConfig();
+    FileConfiguration config;
+    CustomizableSpawns plugin;
+
+    public SpawnSetListener(FileConfiguration configFile, CustomizableSpawns pluginFile){
+        this.config = configFile;
+        this.plugin = pluginFile;
+    }
 
     @EventHandler
     public boolean isSpawnSet(BlockPlaceEvent event){
@@ -22,8 +28,8 @@ public class SpawnSetListener implements Listener {
             return false;
         }
 
-        String topMaterial = CustomizableSpawns.getPlugin().getConfig().getString("topMaterial");
-        String bottomMaterial = CustomizableSpawns.getPlugin().getConfig().getString("bottomMaterial");
+        String topMaterial = config.getString("topMaterial");
+        String bottomMaterial = config.getString("bottomMaterial");
 
         if(event.getBlock().getType() != Material.valueOf(topMaterial)){
             return false;
@@ -32,7 +38,7 @@ public class SpawnSetListener implements Listener {
         if(event.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.valueOf(bottomMaterial)) && !doesSpawnExit(event)){
             String worldName = event.getPlayer().getWorld().getName();
             ConfigurationSection spawnLocationsConfig = config.getConfigurationSection("spawnLocations");
-            Location block = event.getBlock().getRelative(BlockFace.DOWN).getLocation();
+            Location spawnBlock = event.getBlock().getRelative(BlockFace.DOWN).getLocation();
 
             if(spawnLocationsConfig == null){
                  spawnLocationsConfig = config.createSection("spawnLocations");
@@ -46,18 +52,18 @@ public class SpawnSetListener implements Listener {
             int spawnIndex = getNextSpawnIndex(worldSection);
             ConfigurationSection spawnLocation = worldSection.createSection("spawn" + spawnIndex);
 
-            spawnLocation.set("x", block.getX());
-            spawnLocation.set("y", block.getY());
-            spawnLocation.set("z", block.getZ());
+            spawnLocation.set("x", spawnBlock.getX());
+            spawnLocation.set("y", spawnBlock.getY());
+            spawnLocation.set("z", spawnBlock.getZ());
 
 
-            CustomizableSpawns.getPlugin().saveConfig();
+            plugin.saveConfig();
             event.getPlayer().sendMessage("Spawn point set!");
         }
         return true;
     }
 
-    public boolean doesSpawnExit(BlockPlaceEvent event){
+    private boolean doesSpawnExit(BlockPlaceEvent event){
         String worldName = event.getPlayer().getWorld().getName();
         ConfigurationSection spawnLocationsConfig = config.getConfigurationSection("spawnLocations." + worldName);
         if(spawnLocationsConfig != null){
@@ -69,7 +75,7 @@ public class SpawnSetListener implements Listener {
 
                 Location existingSpawn = new Location(event.getBlock().getWorld(), x, y, z);
 
-                if(existingSpawn.equals(event.getBlock().getLocation())){
+                if(existingSpawn.equals(event.getBlock().getRelative(BlockFace.DOWN).getLocation())){
                     event.getPlayer().sendMessage("Spawn Point exists!");
                     return true;
                 }
