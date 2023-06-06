@@ -1,6 +1,7 @@
 package org.plexforge.customizablespawns.listeners;
 
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -25,7 +26,7 @@ public class SpawnSetListener implements Listener {
             return false;
         }
 
-        if(event.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.valueOf(bottomMaterial))){
+        if(event.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.valueOf(bottomMaterial)) && !doesSpawnExit(event)){
             ConfigurationSection spawnLocationsConfig = config.getConfigurationSection("spawnLocations");
             String worldName = event.getPlayer().getWorld().getName();
 
@@ -52,6 +53,28 @@ public class SpawnSetListener implements Listener {
             event.getPlayer().sendMessage("Spawn point set!");
         }
         return true;
+    }
+
+    public boolean doesSpawnExit(BlockPlaceEvent event){
+        String worldName = event.getPlayer().getWorld().getName();
+        ConfigurationSection spawnLocationsConfig = config.getConfigurationSection("spawnLocations." + worldName);
+        if(spawnLocationsConfig != null){
+            for(String spawnKey : spawnLocationsConfig.getKeys(false)){
+                ConfigurationSection spawnLocation = spawnLocationsConfig.getConfigurationSection(spawnKey);
+                int x = spawnLocation.getInt("x");
+                int y = spawnLocation.getInt("y");
+                int z = spawnLocation.getInt("z");
+
+                Location existingSpawn = new Location(event.getBlock().getWorld(), x, y, z);
+
+                if(existingSpawn.equals(event.getBlock().getLocation())){
+                    event.getPlayer().sendMessage("Spawn Point exists!");
+                    return true;
+                }
+            }
+        }
+        event.getPlayer().sendMessage("Spawn Point does not exist!");
+        return false;
     }
 
     private int getNextSpawnIndex(ConfigurationSection worldSection) {
