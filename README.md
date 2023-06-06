@@ -53,3 +53,5 @@ spawnLocations:
       x: -100
       y: 70
       z: 200
+      
+      
