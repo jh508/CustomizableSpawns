@@ -3,7 +3,6 @@ package org.plexforge.customizablespawns.listeners;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -29,12 +28,12 @@ public class SpawnSetListener implements Listener {
         if(event.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.valueOf(bottomMaterial)) && !doesSpawnExit(event)){
             String worldName = event.getPlayer().getWorld().getName();
             ConfigurationSection spawnLocationsConfig = config.getConfigurationSection("spawnLocations");
-            ConfigurationSection worldSection = spawnLocationsConfig.getConfigurationSection(worldName);
-            Block block = event.getBlock();
+            Location block = event.getBlock().getRelative(BlockFace.DOWN).getLocation();
 
             if(spawnLocationsConfig == null){
                  spawnLocationsConfig = config.createSection("spawnLocations");
             }
+            ConfigurationSection worldSection = spawnLocationsConfig.getConfigurationSection(worldName);
 
             if(worldSection == null){
                 worldSection = spawnLocationsConfig.createSection(event.getPlayer().getWorld().getName());
