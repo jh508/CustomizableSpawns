@@ -1,8 +1,6 @@
 package org.plexforge.customizablespawns;
 
 import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.plexforge.customizablespawns.listeners.SpawnSetListener;
 

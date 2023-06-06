@@ -8,6 +8,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.plexforge.customizablespawns.CustomizableSpawns;
 
@@ -61,6 +62,54 @@ public class SpawnSetListener implements Listener {
             event.getPlayer().sendMessage("Spawn point set!");
         }
         return true;
+    }
+
+    @EventHandler
+    public boolean removeSpawnBlock(BlockBreakEvent event){
+        if(!event.getPlayer().hasPermission("customizable.spawn.setter")){
+            event.setCancelled(true);
+            return false;
+        }
+
+        Material eventBlockBottomMaterial;
+        Material eventBlockTopMaterial;
+
+        if(event.getBlock().getType().equals(Material.valueOf(config.getString("topMaterial")))){
+             eventBlockBottomMaterial = event.getBlock().getRelative(BlockFace.DOWN).getType();
+             eventBlockTopMaterial = event.getBlock().getType();
+        }
+        else{
+            eventBlockBottomMaterial = event.getBlock().getType();
+            eventBlockTopMaterial = event.getBlock().getRelative(BlockFace.UP).getType();
+        }
+
+        Material configBottomMaterial = Material.valueOf(config.getString("bottomMaterial"));
+        Material configTopMaterial = Material.valueOf(config.getString("topMaterial"));
+
+        if(eventBlockBottomMaterial.equals(configBottomMaterial) && eventBlockTopMaterial.equals(configTopMaterial) || eventBlockBottomMaterial.equals(configTopMaterial) && eventBlockTopMaterial.equals(configBottomMaterial)){
+            String worldName = event.getBlock().getWorld().getName();
+            ConfigurationSection spawnLocationsConfig = config.getConfigurationSection("spawnLocations." + worldName);
+            if(spawnLocationsConfig != null){
+                for(String spawnKey : spawnLocationsConfig.getKeys(false)){
+                    ConfigurationSection spawnLocation = spawnLocationsConfig.getConfigurationSection(spawnKey);
+                    int x = spawnLocation.getInt("x");
+                    int y = spawnLocation.getInt("y");
+                    int z = spawnLocation.getInt("z");
+
+                    Location existingSpawn = new Location(event.getBlock().getWorld(), x, y, z);
+
+                    if(existingSpawn.equals(event.getBlock().getLocation()) ||
+                            existingSpawn.equals(event.getBlock().getRelative(BlockFace.UP).getLocation()) ||
+                            existingSpawn.equals(event.getBlock().getRelative(BlockFace.DOWN).getLocation())){
+                        spawnLocationsConfig.set(spawnKey, null);
+                        event.getPlayer().sendMessage("Spawn point removed!");
+                        plugin.saveConfig();
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private boolean doesSpawnExit(BlockPlaceEvent event){
