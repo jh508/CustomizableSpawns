@@ -20,7 +20,7 @@ The Customizable Spawns plugin is a powerful tool for customizing and managing s
 
 ## Installation
 
-1. Download the latest release of the Customizable Spawns plugin from the [releases page](https://github.com/your-username/customizable-spawns/releases).
+1. Download the latest release of the Customizable Spawns plugin from the [releases page](https://github.com/jh508/customizable-spawns/releases).
 
 2. Copy the plugin JAR file into the `plugins` directory of your Minecraft server.
 
