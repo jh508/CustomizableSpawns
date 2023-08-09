@@ -1,5 +1,4 @@
-# Customizable Spawns Plugin
-
+# Customizable Spawns Plugin (DISCONTINUED)
 The Customizable Spawns plugin is a powerful tool for customizing and managing spawn locations in your Minecraft server. With this plugin, you can define and modify multiple spawn points across different worlds, providing flexibility and control over the player spawning experience.
 
 ## Features
